@@ -9,24 +9,33 @@ import { toast } from "sonner";
 
 export default function EmailVerificationPage() {
   const [verifying, setVerifying] = useState(false);
-  const [verifyStatus, setVerifyStatus] = useState<"idle" | "success" | "error">("idle");
+  const [verifyStatus, setVerifyStatus] = useState<"idle" | "success" | "error" | "already_verified">("idle");
   const [verifyError, setVerifyError] = useState("");
   const [resending, setResending] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const hasVerified = useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, refreshProfile, logout } = useAuth();
+  const { user, refreshProfile, logout, isAdmin } = useAuth();
 
-  // Email from router state (RegisterPage / LoginPage) or from auth user
+  // Email shown while waiting — from router state or from the auth user
   const email = (location.state as { email?: string } | null)?.email ?? user?.email ?? "";
 
-  // ── Auto-verify if token + uid in URL ────────────────────────────────────
+  // ── If user is already verified, go straight to dashboard ────────────────
+  useEffect(() => {
+    if (user?.emailVerified && verifyStatus === "idle" && !searchParams.get("token")) {
+      navigate(isAdmin ? "/admin" : "/dashboard", { replace: true });
+    }
+  }, [user, isAdmin, verifyStatus, searchParams, navigate]);
+
+  // ── Auto-verify when token + uid are present in URL ──────────────────────
   useEffect(() => {
     const token = searchParams.get("token");
-    const uid = searchParams.get("uid");
-    if (!token || !uid) return;
+    const uid   = searchParams.get("uid");
+    if (!token || !uid || hasVerified.current) return;
+    hasVerified.current = true; // prevent double-invocation (StrictMode)
 
     const doVerify = async () => {
       setVerifying(true);
@@ -34,14 +43,30 @@ export default function EmailVerificationPage() {
         const { data, error } = await supabase.functions.invoke("verify-email-token", {
           body: { token, user_id: uid },
         });
-        if (error || !data?.ok) {
-          setVerifyStatus("error");
-          setVerifyError(data?.error ?? error?.message ?? "Verification failed. The link may have expired.");
+
+        if (error) {
+          // "already verified" is not a fatal error
+          const msg: string = error.message ?? "";
+          if (msg.toLowerCase().includes("already")) {
+            setVerifyStatus("already_verified");
+          } else {
+            setVerifyStatus("error");
+            setVerifyError(msg || "Verification failed. The link may have expired.");
+          }
+        } else if (!data?.ok) {
+          const msg: string = data?.error ?? "Verification failed. The link may have expired.";
+          if (msg.toLowerCase().includes("already")) {
+            setVerifyStatus("already_verified");
+          } else {
+            setVerifyStatus("error");
+            setVerifyError(msg);
+          }
         } else {
-          setVerifyStatus("success");
+          // Success — refresh profile so ProtectedRoute reads new email_verified = true
           await refreshProfile();
+          setVerifyStatus("success");
           toast.success("Email verified! Redirecting…");
-          setTimeout(() => navigate("/dashboard", { replace: true }), 2000);
+          setTimeout(() => navigate(isAdmin ? "/admin" : "/dashboard", { replace: true }), 2000);
         }
       } catch (err) {
         setVerifyStatus("error");
@@ -86,7 +111,7 @@ export default function EmailVerificationPage() {
     navigate("/login", { replace: true });
   };
 
-  // ── Token processing state ────────────────────────────────────────────────
+  // ── Token processing ──────────────────────────────────────────────────────
   if (verifying) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -94,6 +119,21 @@ export default function EmailVerificationPage() {
           <Loader2 className="w-10 h-10 text-primary animate-spin mx-auto mb-4" />
           <p className="text-foreground font-medium">Verifying your email…</p>
           <p className="text-muted-foreground text-sm mt-1">Please wait a moment.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (verifyStatus === "already_verified") {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center max-w-sm">
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-10 h-10 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Already Verified</h1>
+          <p className="text-muted-foreground mb-6">Your email address has already been verified. You can sign in normally.</p>
+          <Button onClick={() => navigate("/login", { replace: true })} className="w-full">Go to Sign In</Button>
         </div>
       </div>
     );
@@ -107,8 +147,10 @@ export default function EmailVerificationPage() {
             <CheckCircle className="w-10 h-10 text-green-500" />
           </div>
           <h1 className="text-2xl font-bold text-foreground mb-2">Email Verified!</h1>
-          <p className="text-muted-foreground mb-6">Your email has been verified successfully. Redirecting to your dashboard…</p>
-          <Button onClick={() => navigate("/dashboard", { replace: true })} className="w-full">Go to Dashboard</Button>
+          <p className="text-muted-foreground mb-6">Your email has been verified. Redirecting to your dashboard…</p>
+          <Button onClick={() => navigate(isAdmin ? "/admin" : "/dashboard", { replace: true })} className="w-full">
+            Go to Dashboard
+          </Button>
         </div>
       </div>
     );
@@ -120,7 +162,9 @@ export default function EmailVerificationPage() {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <Link to="/" className="inline-flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 bg-primary rounded flex items-center justify-center"><Cpu className="w-6 h-6 text-primary-foreground" /></div>
+              <div className="w-10 h-10 bg-primary rounded flex items-center justify-center">
+                <Cpu className="w-6 h-6 text-primary-foreground" />
+              </div>
               <span className="font-bold text-2xl text-foreground">BTC<span className="text-primary">Miner</span></span>
             </Link>
           </div>
@@ -145,20 +189,21 @@ export default function EmailVerificationPage() {
     );
   }
 
-  // ── Default: waiting for verification ────────────────────────────────────
+  // ── Default: waiting for user to click the link in their inbox ───────────
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-10 h-10 bg-primary rounded flex items-center justify-center"><Cpu className="w-6 h-6 text-primary-foreground" /></div>
+            <div className="w-10 h-10 bg-primary rounded flex items-center justify-center">
+              <Cpu className="w-6 h-6 text-primary-foreground" />
+            </div>
             <span className="font-bold text-2xl text-foreground">BTC<span className="text-primary">Miner</span></span>
           </Link>
         </div>
 
         <Card className="bg-card border-border">
           <CardContent className="p-8 text-center">
-            {/* Animated envelope illustration */}
             <div className="relative w-20 h-20 mx-auto mb-6">
               <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
                 <Mail className="w-9 h-9 text-primary" />

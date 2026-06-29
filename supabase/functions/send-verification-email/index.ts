@@ -207,18 +207,24 @@ Deno.serve(async (req) => {
     }).catch(() => {/* non-blocking */});
 
     if (!success) {
-      console.error("[send-verification-email] Resend error:", emailRes.status, resBody);
-    } else {
-      console.log("[send-verification-email] Sent to", email);
+      console.error("[send-verification-email] Resend error:", emailRes.status, JSON.stringify(resBody));
+      // Token was already created — always return 200 so the client can show
+      // the "check your inbox" page and offer the resend button.
+      return new Response(JSON.stringify({ ok: true, email_skipped: true, reason: JSON.stringify(resBody) }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
+    console.log("[send-verification-email] Sent to", email);
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
     console.error("[send-verification-email] fatal:", err);
-    return new Response(JSON.stringify({ error: String(err) }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    // Return 200 with error info so the client UX is not broken — the token was
+    // likely already persisted and the user can resend from the verify-email page.
+    return new Response(JSON.stringify({ ok: true, email_skipped: true, reason: String(err) }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });

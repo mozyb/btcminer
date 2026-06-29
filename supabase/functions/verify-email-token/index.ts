@@ -72,7 +72,6 @@ Deno.serve(async (req) => {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
     console.log("[verify-email-token] Verified user", user_id);
 
     // ── Send welcome email after successful verification ─────────────────

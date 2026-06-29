@@ -18,36 +18,18 @@ export default function LoginPage() {
   const [unverifiedUserId, setUnverifiedUserId] = useState<string | null>(null);
   const [resendLoading, setResendLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
-  // pendingNav: true means login just succeeded; wait for auth state to settle
-  const [pendingNav, setPendingNav] = useState(false);
-  const { login, user, isAdmin } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
-  const toastShown = useRef(false);
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Navigate only after the auth state has fully resolved with user profile
-  useEffect(() => {
-    if (pendingNav && user) {
-      if (!user.emailVerified) {
-        setUnverifiedEmail(user.email);
-        setUnverifiedUserId(user.id);
-        setPendingNav(false);
-        setLoading(false);
-        return;
-      }
-      if (!toastShown.current) {
-        toast.success("Welcome back!");
-        toastShown.current = true;
-      }
-      navigate(isAdmin ? "/admin" : "/dashboard", { replace: true });
-    }
-  }, [pendingNav, user, isAdmin, navigate]);
-
-  // Countdown timer
+  // Countdown timer for resend button
   useEffect(() => {
     if (resendCooldown > 0) {
       cooldownRef.current = setInterval(() => {
-        setResendCooldown(c => { if (c <= 1) { clearInterval(cooldownRef.current!); return 0; } return c - 1; });
+        setResendCooldown(c => {
+          if (c <= 1) { clearInterval(cooldownRef.current!); return 0; }
+          return c - 1;
+        });
       }, 1000);
     }
     return () => { if (cooldownRef.current) clearInterval(cooldownRef.current); };
@@ -58,10 +40,23 @@ export default function LoginPage() {
     if (!email.trim() || !password) { toast.error("Please enter your email and password"); return; }
     setLoading(true);
     setUnverifiedEmail(null);
-    toastShown.current = false;
     try {
-      await login(email, password);
-      setPendingNav(true);
+      // login() now returns the fresh profile immediately — no useEffect race needed
+      const profile = await login(email, password);
+      if (!profile) {
+        toast.error("Failed to load profile. Please try again.");
+        setLoading(false);
+        return;
+      }
+      if (!profile.emailVerified) {
+        // Show inline banner instead of redirecting
+        setUnverifiedEmail(profile.email);
+        setUnverifiedUserId(profile.id);
+        setLoading(false);
+        return;
+      }
+      toast.success("Welcome back!");
+      navigate(profile.role === "admin" ? "/admin" : "/dashboard", { replace: true });
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Invalid email or password");
       setLoading(false);
