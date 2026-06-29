@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Cpu, Eye, EyeOff, CheckCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import PageMeta from "@/components/common/PageMeta";
+
 
 const countries = ["United States", "United Kingdom", "Germany", "Canada", "Australia", "Singapore", "Japan", "Brazil", "India", "South Korea", "France", "Netherlands", "Switzerland", "Norway", "Iceland"];
 
@@ -39,7 +41,13 @@ export default function RegisterPage() {
   const strength = form.password.length >= 12 && /[A-Z]/.test(form.password) && /[0-9]/.test(form.password) && /[^A-Za-z0-9]/.test(form.password) ? "strong" : form.password.length >= 8 ? "medium" : "weak";
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <>
+      <PageMeta
+      title="Create Account | Join BTCMiner.online Bitcoin Mining Platform"
+      description="Create your free BTCMiner.online account and start earning Bitcoin through cloud mining today. Quick registration, instant access to mining plans."
+      canonical="/register"
+      />
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
@@ -147,5 +155,6 @@ export default function RegisterPage() {
         </Card>
       </div>
     </div>
-  );
+  
+  </>);
 }

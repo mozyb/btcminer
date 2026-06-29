@@ -6,6 +6,8 @@ import { Cpu, Mail, CheckCircle, RefreshCw, AlertCircle, Loader2, LogOut } from 
 import { supabase } from "@/db/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import PageMeta from "@/components/common/PageMeta";
+
 
 export default function EmailVerificationPage() {
   const [verifying, setVerifying] = useState(false);
@@ -114,18 +116,33 @@ export default function EmailVerificationPage() {
   // ── Token processing ──────────────────────────────────────────────────────
   if (verifying) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <>
+        <PageMeta
+      title="Verify Your Email | BTCMiner.online"
+      description="Verify your email address to activate your BTCMiner.online mining account and access your dashboard."
+      canonical="/verify-email"
+      noindex={true}
+      />
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center">
           <Loader2 className="w-10 h-10 text-primary animate-spin mx-auto mb-4" />
           <p className="text-foreground font-medium">Verifying your email…</p>
           <p className="text-muted-foreground text-sm mt-1">Please wait a moment.</p>
         </div>
       </div>
+    </>
     );
   }
 
   if (verifyStatus === "already_verified") {
     return (
+      <>
+      <PageMeta
+      title="Verify Your Email | BTCMiner.online"
+      description="Verify your email address to activate your BTCMiner.online mining account and gain full dashboard access."
+      canonical="/verify-email"
+      noindex={true}
+      />
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center max-w-sm">
           <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -136,6 +153,7 @@ export default function EmailVerificationPage() {
           <Button onClick={() => navigate("/login", { replace: true })} className="w-full">Go to Sign In</Button>
         </div>
       </div>
+    </>
     );
   }
 

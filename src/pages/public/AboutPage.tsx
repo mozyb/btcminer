@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import PublicLayout from "@/components/layouts/PublicLayout";
 import { Globe, Shield, Zap, Users } from "lucide-react";
+import PageMeta from "@/components/common/PageMeta";
+
 
 const team = [
   { name: "Marcus Reed", role: "CEO & Co-Founder", bg: "Previously VP Engineering at leading mining co." },
@@ -15,7 +17,14 @@ const team = [
 
 export default function AboutPage() {
   return (
-    <PublicLayout>
+    <>
+      <PageMeta
+      title="About BTCMiner.online | Transparent Cloud Bitcoin Mining Company"
+      description="Learn about BTCMiner.online — a transparent cloud Bitcoin mining platform with real ASIC hardware, honest pricing, and daily BTC payouts. No hidden fees, no fake hashrate."
+      canonical="/about"
+      jsonLd={{"@context":"https://schema.org","@type":"AboutPage","name":"About BTCMiner.online","url":"https://btcminer.online/about"}}
+      />
+      <PublicLayout>
       <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-16">
           <Badge className="bg-primary/10 text-primary border-primary/20 mb-3">About Us</Badge>
@@ -85,5 +94,6 @@ export default function AboutPage() {
         </div>
       </div>
     </PublicLayout>
-  );
+  
+  </>);
 }

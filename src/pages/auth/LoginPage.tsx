@@ -8,6 +8,8 @@ import { Cpu, Eye, EyeOff, AlertCircle, Mail, RefreshCw } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/db/supabase";
 import { toast } from "sonner";
+import PageMeta from "@/components/common/PageMeta";
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -81,7 +83,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <>
+      <PageMeta
+      title="Sign In | BTCMiner.online Cloud Mining Dashboard"
+      description="Sign in to your BTCMiner.online account to monitor your Bitcoin mining performance, track rewards, and manage your cloud mining contracts."
+      canonical="/login"
+      noindex={true}
+      />
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
@@ -153,6 +162,7 @@ export default function LoginPage() {
         </Card>
       </div>
     </div>
-  );
+  
+  </>);
 }
 

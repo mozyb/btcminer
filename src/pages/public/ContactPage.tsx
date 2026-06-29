@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import PublicLayout from "@/components/layouts/PublicLayout";
 import { Mail, MessageSquare, Clock } from "lucide-react";
 import { toast } from "sonner";
+import PageMeta from "@/components/common/PageMeta";
+
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -20,7 +22,14 @@ export default function ContactPage() {
   };
 
   return (
-    <PublicLayout>
+    <>
+      <PageMeta
+      title="Contact BTCMiner.online | Bitcoin Mining Support"
+      description="Get in touch with the BTCMiner.online support team. We're here to help with your cloud Bitcoin mining questions, account issues, and technical support."
+      canonical="/contact"
+      jsonLd={{"@context":"https://schema.org","@type":"ContactPage","name":"Contact BTCMiner.online","url":"https://btcminer.online/contact"}}
+      />
+      <PublicLayout>
       <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
           <Badge className="bg-primary/10 text-primary border-primary/20 mb-3">Contact</Badge>
@@ -100,5 +109,6 @@ export default function ContactPage() {
         </div>
       </div>
     </PublicLayout>
-  );
+  
+  </>);
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import PageMeta from "@/components/common/PageMeta";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -90,8 +91,12 @@ export default function CalculatorVariantPage({ variant }: { variant: string }) 
 
   return (
     <PublicLayout>
+      <PageMeta
+        title={`${config.h1} | BTCMiner.online`}
+        description={config.description}
+        canonical={new URL(config.canonical).pathname}
+      />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <link rel="canonical" href={config.canonical} />
 
       {/* Breadcrumb */}
       <div className="border-b border-border bg-muted/30">

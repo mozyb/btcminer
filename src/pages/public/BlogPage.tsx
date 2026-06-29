@@ -8,6 +8,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PublicLayout from "@/components/layouts/PublicLayout";
 import { knowledgeArticles, knowledgeCategories } from "@/lib/mockData";
 import { useBtcStats } from "@/hooks/useBtcStats";
+import PageMeta from "@/components/common/PageMeta";
+
 import {
   Clock, Search, ChevronRight, BookOpen, Cpu, TrendingUp,
   BarChart3, Cloud, Globe, Star, Zap, ArrowRight, Users,
@@ -179,7 +181,13 @@ export default function BlogPage() {
   };
 
   return (
-    <PublicLayout>
+    <>
+      <PageMeta
+      title="Bitcoin Mining Blog | News, Guides & Insights | BTCMiner.online"
+      description="Stay up to date with Bitcoin mining news, tutorials, profitability guides, and insights. Expert articles on hashrate, difficulty, halving, and cloud mining."
+      canonical="/blog"
+      />
+      <PublicLayout>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(searchSchema) }} />
 
       {/* ── Hero Section ──────────────────────────────────────────────────────── */}
@@ -420,5 +428,6 @@ export default function BlogPage() {
       </div>
       <div className="h-20 md:hidden" />
     </PublicLayout>
+  </>
   );
 }

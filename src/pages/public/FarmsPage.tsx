@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/layouts/PublicLayout";
 import { miningFarms } from "@/lib/mockData";
 import { useBtcStats } from "@/hooks/useBtcStats";
+import PageMeta from "@/components/common/PageMeta";
+
 import {
   MapPin, Zap, Thermometer, Server, CheckCircle, Shield, Lock,
   Activity, Wind, Droplets, Leaf, Users, Star, ChevronRight,
@@ -152,7 +154,13 @@ export default function FarmsPage() {
   }));
 
   return (
-    <PublicLayout>
+    <>
+      <PageMeta
+      title="Our Bitcoin Mining Farms | Real ASIC Hardware | BTCMiner.online"
+      description="Explore BTCMiner.online real Bitcoin mining farms. Our ASIC infrastructure spans multiple continents, delivering 99.9% uptime and maximum hashrate efficiency."
+      canonical="/farms"
+      />
+      <PublicLayout>
       {/* Structured Data */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
@@ -683,5 +691,6 @@ export default function FarmsPage() {
       </div>
       <div className="h-20 md:hidden" />
     </PublicLayout>
+  </>
   );
 }

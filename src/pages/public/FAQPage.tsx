@@ -3,12 +3,21 @@ import { Badge } from "@/components/ui/badge";
 import PublicLayout from "@/components/layouts/PublicLayout";
 import { faqs } from "@/lib/mockData";
 import { ChevronDown } from "lucide-react";
+import PageMeta from "@/components/common/PageMeta";
+
 
 export default function FAQPage() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <PublicLayout>
+    <>
+      <PageMeta
+      title="Frequently Asked Questions | Bitcoin Cloud Mining FAQ | BTCMiner.online"
+      description="Get answers to the most common questions about Bitcoin cloud mining on BTCMiner.online. Learn how contracts work, how payouts are calculated, and how to get started."
+      canonical="/faq"
+      jsonLd={{"@context":"https://schema.org","@type":"FAQPage","name":"BTCMiner.online FAQ","url":"https://btcminer.online/faq"}}
+      />
+      <PublicLayout>
       <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 text-center">
           <Badge className="bg-primary/10 text-primary border-primary/20 mb-3">FAQ</Badge>
@@ -44,5 +53,6 @@ export default function FAQPage() {
         </div>
       </div>
     </PublicLayout>
-  );
+  
+  </>);
 }

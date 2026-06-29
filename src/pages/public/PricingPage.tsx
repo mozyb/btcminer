@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import PublicLayout from "@/components/layouts/PublicLayout";
 import { miningContracts } from "@/lib/mockData";
 import { useBtcStats } from "@/hooks/useBtcStats";
+import PageMeta from "@/components/common/PageMeta";
+
 import {
   CheckCircle, ShoppingBag, Zap, Shield, TrendingUp, Wallet,
   Activity, Lock, Star, ChevronRight, Flame, Users, BarChart3,
@@ -262,7 +264,13 @@ export default function PricingPage() {
   }));
 
   return (
-    <PublicLayout>
+    <>
+      <PageMeta
+      title="Cloud Bitcoin Mining Pricing Plans | BTCMiner.online"
+      description="Transparent Bitcoin cloud mining pricing. Compare starter, professional and enterprise plans. Fixed rates, no hidden fees, automated daily BTC payouts."
+      canonical="/pricing"
+      />
+      <PublicLayout>
       {/* ── Structured Data ────────────────────────────────────────────────── */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
@@ -809,5 +817,6 @@ export default function PricingPage() {
       {/* Bottom padding for mobile sticky CTA */}
       <div className="h-20 md:hidden" />
     </PublicLayout>
+  </>
   );
 }

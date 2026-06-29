@@ -6,6 +6,8 @@ import PublicLayout from "@/components/layouts/PublicLayout";
 import { miningFarms, miningHardware, apiConfigs } from "@/lib/mockData";
 import { useBtcStats } from "@/hooks/useBtcStats";
 import { CheckCircle, Activity, Database, Globe } from "lucide-react";
+import PageMeta from "@/components/common/PageMeta";
+
 
 const recentPayouts = [
   { txid: "3fd6e2a4b8c1d9f0...", amount: "0.00821 BTC", time: "2024-03-12 02:14 UTC", pool: "AntPool" },
@@ -21,7 +23,14 @@ export default function TransparencyPage() {
   const totalTH = miningHardware.reduce((s, h) => s + (h.hashrate * h.count), 0);
 
   return (
-    <PublicLayout>
+    <>
+      <PageMeta
+      title="Mining Transparency & Proof of Work | BTCMiner.online"
+      description="BTCMiner.online is fully transparent. View our real-time mining pool stats, hashrate verification, and live blockchain data. Proof that your mining rewards are real."
+      canonical="/transparency"
+      jsonLd={{"@context":"https://schema.org","@type":"WebPage","name":"BTCMiner.online Transparency","url":"https://btcminer.online/transparency"}}
+      />
+      <PublicLayout>
       <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
           <div className="flex items-center gap-3 mb-3">
@@ -173,6 +182,7 @@ export default function TransparencyPage() {
         </Card>
       </div>
     </PublicLayout>
-  );
+  
+  </>);
 }
 

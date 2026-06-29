@@ -10,6 +10,8 @@ import CalculatorEngine from "@/components/calculator/CalculatorEngine";
 import { useBtcStats } from "@/hooks/useBtcStats";
 import { supabase } from "@/db/supabase";
 import { miningContracts } from "@/lib/mockData";
+import PageMeta from "@/components/common/PageMeta";
+
 import {
   ChevronRight, ArrowRight, TrendingUp, Zap, BarChart3,
   DollarSign, Shield, BookOpen, ExternalLink, Cpu, Hash,
@@ -111,7 +113,13 @@ export default function CalculatorPage() {
   };
 
   return (
-    <PublicLayout>
+    <>
+      <PageMeta
+      title="Bitcoin Mining Profitability Calculator | BTCMiner.online"
+      description="Use our free Bitcoin mining calculator to estimate daily, weekly, and monthly BTC earnings. Enter your hashrate, electricity cost and difficulty to calculate profits."
+      canonical="/calculator"
+      />
+      <PublicLayout>
       {faqSchema && <JsonLd data={faqSchema} />}
       <JsonLd data={webPageSchema} />
       <JsonLd data={orgSchema} />
@@ -411,5 +419,6 @@ export default function CalculatorPage() {
       </div>
       <div className="h-20 md:hidden" />
     </PublicLayout>
+  </>
   );
 }

@@ -8,6 +8,8 @@ import PublicLayout from "@/components/layouts/PublicLayout";
 import { miningContracts, miningFarms, miningHardware } from "@/lib/mockData";
 import { useBtcStats } from "@/hooks/useBtcStats";
 import { supabase } from "@/db/supabase";
+import PageMeta from "@/components/common/PageMeta";
+
 import {
   Shield, Globe, TrendingUp, Server, Cpu, ChevronRight,
   ArrowRight, CheckCircle, Activity, Hash, Star, ChevronDown,
@@ -85,6 +87,11 @@ export default function HomePage() {
 
   return (
     <PublicLayout>
+      <PageMeta
+      title="Buy Bitcoin Hashrate Online | Real Cloud Mining Platform"
+      description="BTCMiner.online is a trusted cloud Bitcoin mining platform. Buy BTC hashpower instantly, earn daily mining rewards with real-time performance monitoring, secure deposits and automated payouts."
+      canonical="/"
+      />
 
       {/* ─────────────────────────────────────────────────── */}
       {/* 1. HERO                                            */}

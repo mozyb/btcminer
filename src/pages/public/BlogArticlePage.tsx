@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
+import PageMeta from "@/components/common/PageMeta";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -192,6 +193,12 @@ export default function BlogArticlePage() {
 
   return (
     <PublicLayout>
+      <PageMeta
+        title={`${article.title} | BTCMiner.online`}
+        description={article.excerpt ?? `Read ${article.title} on the BTCMiner.online Knowledge Center.`}
+        canonical={`/blog/${article.slug}`}
+        ogType="article"
+      />
       <ReadingProgressBar />
       {articleSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />}
       {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />}

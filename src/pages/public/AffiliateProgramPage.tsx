@@ -5,6 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import PublicLayout from "@/components/layouts/PublicLayout";
 import { Users, DollarSign, Link2, BarChart3 } from "lucide-react";
+import PageMeta from "@/components/common/PageMeta";
+
 
 const levels = [
   { level: "Level 1", rate: "5%", desc: "Commission on all hashrate purchases by direct referrals" },
@@ -14,7 +16,14 @@ const levels = [
 
 export default function AffiliateProgramPage() {
   return (
-    <PublicLayout>
+    <>
+      <PageMeta
+      title="Bitcoin Mining Affiliate Program | Earn BTC Commissions | BTCMiner.online"
+      description="Join the BTCMiner.online affiliate program and earn Bitcoin commissions for every referral. Up to 10% lifetime commissions on mining contracts. Free to join."
+      canonical="/affiliate-program"
+      jsonLd={{"@context":"https://schema.org","@type":"WebPage","name":"BTCMiner.online Affiliate Program","url":"https://btcminer.online/affiliate-program"}}
+      />
+      <PublicLayout>
       <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-14">
           <Badge className="bg-primary/10 text-primary border-primary/20 mb-3">Affiliate Program</Badge>
@@ -69,5 +78,6 @@ export default function AffiliateProgramPage() {
         </div>
       </div>
     </PublicLayout>
-  );
+  
+  </>);
 }

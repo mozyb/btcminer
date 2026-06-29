@@ -1,6 +1,15 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import PublicLayout from "@/components/layouts/PublicLayout";
+import PageMeta from "@/components/common/PageMeta";
+
+const POLICY_SEO: Record<string, { title: string; description: string; canonical: string }> = {
+  terms:   { title: "Terms of Service | BTCMiner.online", description: "Read the BTCMiner.online Terms of Service. Understand your rights and obligations when using our cloud Bitcoin mining platform.", canonical: "/terms" },
+  privacy: { title: "Privacy Policy | BTCMiner.online", description: "Learn how BTCMiner.online collects, uses, and protects your personal data. We are committed to transparency and your privacy.", canonical: "/privacy" },
+  aml:     { title: "AML Policy | Anti-Money Laundering | BTCMiner.online", description: "BTCMiner.online Anti-Money Laundering (AML) policy. We comply with global financial regulations to ensure a safe and legal platform.", canonical: "/aml" },
+  kyc:     { title: "KYC Policy | Know Your Customer | BTCMiner.online", description: "BTCMiner.online KYC (Know Your Customer) policy. Verification requirements to keep the platform safe and compliant.", canonical: "/kyc-policy" },
+  risk:    { title: "Risk Disclosure | BTCMiner.online Cloud Mining", description: "Important risk disclosure for BTCMiner.online cloud mining services. Understand the risks before investing in Bitcoin hashpower.", canonical: "/risk" },
+};
 
 type PolicyType = "terms" | "privacy" | "aml" | "kyc" | "risk";
 
@@ -70,8 +79,10 @@ const policies: Record<PolicyType, { title: string; badge: string; content: { he
 
 export default function PolicyPage({ type }: { type: PolicyType }) {
   const policy = policies[type];
+  const seo = POLICY_SEO[type];
   return (
     <PublicLayout>
+      {seo && <PageMeta title={seo.title} description={seo.description} canonical={seo.canonical} noindex={false} />}
       <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
           <Badge className="bg-primary/10 text-primary border-primary/20 mb-3">{policy.badge}</Badge>

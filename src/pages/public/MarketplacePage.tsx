@@ -11,6 +11,8 @@ import PublicLayout from "@/components/layouts/PublicLayout";
 import { miningContracts } from "@/lib/mockData";
 import { useBtcStats } from "@/hooks/useBtcStats";
 import { supabase } from "@/db/supabase";
+import PageMeta from "@/components/common/PageMeta";
+
 import {
   Search, Zap, Clock, DollarSign, ChevronRight, ArrowRight,
   TrendingUp, Shield, Server, CheckCircle, ExternalLink,
@@ -129,7 +131,13 @@ export default function MarketplacePage() {
   }));
 
   return (
-    <PublicLayout>
+    <>
+      <PageMeta
+      title="Bitcoin Mining Plans & Hashrate Contracts | BTCMiner.online Marketplace"
+      description="Browse and buy Bitcoin cloud mining contracts. Choose your hashpower, lock in your mining contract, and start earning BTC today. Flexible plans for all budgets."
+      canonical="/marketplace"
+      />
+      <PublicLayout>
       {faqSchema     && <JsonLd data={faqSchema} />}
       <JsonLd data={breadcrumbSchema} />
       <JsonLd data={orgSchema} />
@@ -506,5 +514,6 @@ export default function MarketplacePage() {
       </div>
       <div className="h-20 md:hidden" />
     </PublicLayout>
+  </>
   );
 }

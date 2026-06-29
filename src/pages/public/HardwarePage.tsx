@@ -5,6 +5,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import PublicLayout from "@/components/layouts/PublicLayout";
 import { miningHardware } from "@/lib/mockData";
 import { Cpu } from "lucide-react";
+import PageMeta from "@/components/common/PageMeta";
+
 
 const logoColors: Record<string, string> = {
   Bitmain: "bg-primary/10 text-primary border-primary/20",
@@ -23,7 +25,14 @@ export default function HardwarePage() {
   });
 
   return (
-    <PublicLayout>
+    <>
+      <PageMeta
+      title="ASIC Mining Hardware | Antminer, Whatsminer & More | BTCMiner.online"
+      description="Discover the ASIC mining hardware powering BTCMiner.online cloud mining contracts. Bitmain Antminer S21, MicroBT Whatsminer M60 and more top-tier Bitcoin miners."
+      canonical="/hardware"
+      jsonLd={{"@context":"https://schema.org","@type":"WebPage","name":"ASIC Mining Hardware","url":"https://btcminer.online/hardware"}}
+      />
+      <PublicLayout>
       <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
           <Badge className="bg-primary/10 text-primary border-primary/20 mb-3">Mining Hardware</Badge>
@@ -102,5 +111,6 @@ export default function HardwarePage() {
         </div>
       </div>
     </PublicLayout>
-  );
+  
+  </>);
 }
