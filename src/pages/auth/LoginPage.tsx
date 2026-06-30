@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Cpu, Eye, EyeOff, AlertCircle, Mail, RefreshCw } from "lucide-react";
+import { Cpu, Eye, EyeOff, AlertCircle, Mail, RefreshCw, CheckCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/db/supabase";
 import { toast } from "sonner";
@@ -22,7 +22,11 @@ export default function LoginPage() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Show success banner when redirected here after email verification
+  const justVerified = (location.state as { emailVerified?: boolean } | null)?.emailVerified === true;
 
   // Countdown timer for resend button
   useEffect(() => {
@@ -102,6 +106,19 @@ export default function LoginPage() {
           <h1 className="text-2xl font-bold text-foreground">Sign In</h1>
           <p className="text-muted-foreground text-sm mt-1">Access your mining dashboard</p>
         </div>
+
+        {/* Email verified success banner */}
+        {justVerified && (
+          <div className="mb-4 rounded-lg border border-green-500/40 bg-green-500/10 p-4">
+            <div className="flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-foreground mb-0.5">Email verified successfully!</p>
+                <p className="text-sm text-muted-foreground">Your account is now active. Sign in below to access your mining dashboard.</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Unverified email banner */}
         {unverifiedEmail && (

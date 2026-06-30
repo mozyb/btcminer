@@ -64,11 +64,19 @@ export default function EmailVerificationPage() {
             setVerifyError(msg);
           }
         } else {
-          // Success — refresh profile so ProtectedRoute reads new email_verified = true
+          // Success — try to refresh the profile if already logged in
           await refreshProfile();
           setVerifyStatus("success");
           toast.success("Email verified! Redirecting…");
-          setTimeout(() => navigate(isAdmin ? "/admin" : "/dashboard", { replace: true }), 2000);
+          // If there is an active session (user clicked link while logged in) go to dashboard.
+          // If not (common case: clicked from email client without an open session) go to login
+          // so they can authenticate.  We pass state so LoginPage can show a success banner.
+          const { data: { session: activeSession } } = await supabase.auth.getSession();
+          const dest = activeSession
+            ? (isAdmin ? "/admin" : "/dashboard")
+            : "/login";
+          const navState = activeSession ? undefined : { emailVerified: true };
+          setTimeout(() => navigate(dest, { replace: true, state: navState }), 2000);
         }
       } catch (err) {
         setVerifyStatus("error");
