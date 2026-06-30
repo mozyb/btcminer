@@ -88,7 +88,7 @@ Alternatively, use the official installer: Visit the Node.js official website. D
 
 ### How to develop backend services?
 
-Configure environment variables and install relevant dependencies.If you need to use a database, please use the official version of Supabase.
+Configure environment variables and install relevant dependencies.If you need to use a database, please use the official  version of Supabase.
 
 ## Learn More
 
