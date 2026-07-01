@@ -57,7 +57,7 @@ export default function AdminAuditLogs() {
 
   useEffect(() => { loadLogs(); }, [loadLogs]);
 
-  const users = [...new Set(allLogs.map(l => l.admin_email))];
+  const users = [...new Set(allLogs.map(l => l.admin_email).filter(Boolean))];
 
   const filtered = allLogs.filter(l => {
     const matchS = l.action.includes(search.toUpperCase()) || l.target.toLowerCase().includes(search.toLowerCase()) || l.admin_email.includes(search.toLowerCase());

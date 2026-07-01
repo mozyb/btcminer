@@ -62,7 +62,7 @@ export default function DashboardMarketplace() {
 
   const btcWallet = wallets.find(w => w.currency === "BTC");
   const btcBalanceUSD = btcWallet ? btcWallet.balance * btc.btcPrice : 0;
-  const algorithms = [...new Set(contracts.map(c => c.algorithm))];
+  const algorithms = [...new Set(contracts.map(c => c.algorithm).filter(Boolean))];
 
   const filtered = contracts.filter(c => {
     const matchS = c.name.toLowerCase().includes(search.toLowerCase());

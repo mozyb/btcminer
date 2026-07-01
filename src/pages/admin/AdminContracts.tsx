@@ -36,7 +36,7 @@ const HASHRATE_UNITS = ["TH/s", "PH/s", "EH/s", "GH/s", "MH/s", "KH/s"];
 const ALGORITHMS     = ["SHA-256", "Scrypt", "KHeavyHash", "Ethash", "X11", "Equihash", "RandomX", "Blake3"];
 const COINS          = ["Bitcoin", "Litecoin", "Kaspa", "Dogecoin", "Monero", "Ethereum Classic", "Zcash", "Dash"];
 const BADGE_OPTIONS  = [
-  { value: "", label: "None" },
+  { value: "none", label: "None" },
   { value: "most_popular", label: "Most Popular" },
   { value: "best_value", label: "Best Value" },
   { value: "featured", label: "Featured" },
@@ -456,7 +456,7 @@ export default function AdminContracts() {
                     </Select>
                   </FormField>
                   <FormField label="Badge">
-                    <Select value={form.badge ?? ""} onValueChange={v => set("badge", v || null)}>
+                    <Select value={form.badge ?? "none"} onValueChange={v => set("badge", v === "none" ? null : v)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>{BADGE_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
                     </Select>
