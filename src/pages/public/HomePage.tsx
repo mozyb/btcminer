@@ -81,7 +81,7 @@ export default function HomePage() {
 
   // ── Mining calculator ─────────────────────────────────────
   const networkTH       = (btc.networkHashrate > 0 ? btc.networkHashrate : 850) * 1e6;
-  const activeBtcPrice  = btc.btcPrice > 0 ? btc.btcPrice : 97000;
+  const activeBtcPrice  = btc.btcPrice > 0 ? btc.btcPrice : 0;
   const dailyBlocks     = 144;
   const grossBTC        = networkTH > 0 ? (calcHashrate / networkTH) * dailyBlocks * btc.blockReward : 0;
   const maintenanceRate = 0.0028;

@@ -51,11 +51,11 @@ export default function ContractDetailPage() {
                      : contract.hashrate_unit === "MH/s" ? contract.hashrate / 1e6
                      : contract.hashrate;
   const grossDailyBTC = (hashrateInTH / networkTH) * 144 * (btc.blockReward || 3.125);
-  const maintDailyBTC = (contract.maintenance_fee * hashrateInTH) / (btc.btcPrice || 97000);
+  const maintDailyBTC = (contract.maintenance_fee * hashrateInTH) / (btc.btcPrice || 0);
   const netDailyBTC   = Math.max(0, grossDailyBTC - maintDailyBTC);
-  const netDailyUSD   = netDailyBTC * (btc.btcPrice || 97000);
+  const netDailyUSD   = netDailyBTC * (btc.btcPrice || 0);
   const netTotalBTC   = netDailyBTC * contract.duration;
-  const netTotalUSD   = netTotalBTC * (btc.btcPrice || 97000);
+  const netTotalUSD   = netTotalBTC * (btc.btcPrice || 0);
   const roi           = displayPrice > 0 ? ((netTotalUSD / displayPrice) * 100).toFixed(1) : "0";
   const breakevenDays = netDailyUSD > 0 ? Math.ceil(displayPrice / netDailyUSD) : 0;
 
@@ -376,7 +376,7 @@ export default function ContractDetailPage() {
                                   : r.hashrate_unit === "MH/s" ? r.hashrate / 1e6
                                   : r.hashrate;
                 const rDaily     = (rHashrateTH / networkTH) * 144 * (btc.blockReward || 3.125);
-                const rDailyUSD  = rDaily * (btc.btcPrice || 97000);
+                const rDailyUSD  = rDaily * (btc.btcPrice || 0);
                 const rPrice     = r.promotional_price ?? r.discount_price ?? r.price;
                 return (
                   <Card key={r.id} className="bg-card border-border h-full flex flex-col hover:border-primary/40 transition-colors">

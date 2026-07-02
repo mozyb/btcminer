@@ -76,7 +76,7 @@ export default function MarketplacePage() {
   }, []);
 
   const networkTH = btc.networkHashrate > 0 ? btc.networkHashrate * 1e6 : 850e6;
-  const btcPrice  = btc.btcPrice > 0 ? btc.btcPrice : 97000;
+  const btcPrice  = btc.btcPrice > 0 ? btc.btcPrice : 0;
 
   const filtered = contracts.filter(c => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || c.coin.toLowerCase().includes(search.toLowerCase());

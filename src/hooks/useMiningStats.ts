@@ -38,7 +38,7 @@ export interface LiveStats {
 }
 
 const FALLBACK: LiveStats = {
-  btcPrice: 97000,
+  btcPrice: 0,
   networkDifficulty: 120,
   networkHashrate: 850,
   difficultyChange: 0,

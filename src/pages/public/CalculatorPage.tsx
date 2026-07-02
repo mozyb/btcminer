@@ -71,7 +71,7 @@ export default function CalculatorPage() {
   const introBlock   = content.find(c => c.key === "intro");
   const guideBlock   = content.find(c => c.key === "guide");
   const factorBlocks = content.filter(c => c.key.startsWith("factors_"));
-  const btcPrice     = btc.btcPrice || 97000;
+  const btcPrice     = btc.btcPrice || 0;
 
   // Recommended contracts from DB based on hashrate entered
   const recommended = dbContracts
