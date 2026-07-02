@@ -55,45 +55,18 @@ async function fetchLiveStats(): Promise<LiveStats> {
   if (_cache && Date.now() - _cache.ts < CACHE_MS) return _cache.data;
 
   try {
-    const [priceRes, mempoolRes] = await Promise.allSettled([
-      fetch("https://api.coinbase.com/v2/prices/BTC-USD/spot", { signal: AbortSignal.timeout(6000) }),
-      fetch("https://mempool.space/api/v1/mining/hashrate/3d",  { signal: AbortSignal.timeout(6000) }),
-    ]);
-
-    let btcPrice = FALLBACK.btcPrice;
-    if (priceRes.status === "fulfilled" && priceRes.value.ok) {
-      const j = await priceRes.value.json();
-      const p = parseFloat(j?.data?.amount);
-      if (p > 0) btcPrice = p;
-    }
-
-    let networkDifficulty = FALLBACK.networkDifficulty;
-    let networkHashrate   = FALLBACK.networkHashrate;
-    let difficultyChange  = FALLBACK.difficultyChange;
-
-    if (mempoolRes.status === "fulfilled" && mempoolRes.value.ok) {
-      const m = await mempoolRes.value.json();
-      const rawHashrate   = m.currentHashrate  as number;
-      const rawDifficulty = m.currentDifficulty as number;
-      if (rawHashrate   > 0) networkHashrate   = rawHashrate   / 1e18;
-      if (rawDifficulty > 0) networkDifficulty = rawDifficulty / 1e12;
-
-      // difficulty adjustment change %
-      try {
-        const adjRes = await fetch("https://mempool.space/api/v1/difficulty-adjustment", { signal: AbortSignal.timeout(5000) });
-        if (adjRes.ok) {
-          const adj = await adjRes.json();
-          difficultyChange = Number((adj.difficultyChange as number ?? 0).toFixed(2));
-        }
-      } catch { /* ignore */ }
+    // Route through the btc-stats Edge Function — server-side, no CORS issues
+    const { data, error } = await supabase.functions.invoke("btc-stats");
+    if (error || !data?.btcPrice || isNaN(data.btcPrice) || data.btcPrice < 1000) {
+      throw new Error(error?.message ?? "btc-stats: invalid response");
     }
 
     const result: LiveStats = {
-      btcPrice,
-      networkDifficulty: Number(networkDifficulty.toFixed(2)),
-      networkHashrate:   Number(networkHashrate.toFixed(2)),
-      difficultyChange,
-      blockReward: 3.125,
+      btcPrice:         data.btcPrice,
+      networkDifficulty: Number((data.networkDifficulty ?? 120).toFixed(2)),
+      networkHashrate:   Number((data.networkHashrate   ?? 850).toFixed(2)),
+      difficultyChange:  data.difficultyChange ?? 0,
+      blockReward:       data.blockReward      ?? 3.125,
       lastUpdated: new Date(),
       loading: false,
     };
