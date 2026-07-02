@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import {
   LayoutDashboard, FileText, ShoppingCart, BarChart3, Wallet,
   ArrowDownToLine, ArrowUpFromLine, History, Users, Shield,
-  Bell, Settings, HelpCircle, LogOut, Menu, Cpu, X, ChevronRight,
+  Bell, Settings, HelpCircle, LogOut, Menu, Cpu, X, ChevronRight, Coins,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -18,6 +18,7 @@ const navItems = [
   { icon: FileText, label: "My Contracts", href: "/dashboard/contracts" },
   { icon: ShoppingCart, label: "Marketplace", href: "/dashboard/marketplace" },
   { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
+  { icon: Coins, label: "My Rewards", href: "/dashboard/rewards" },
   { label: "—", divider: true },
   { icon: Wallet, label: "Wallet", href: "/dashboard/wallet" },
   { icon: ArrowDownToLine, label: "Deposit", href: "/dashboard/deposit" },

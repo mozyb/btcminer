@@ -78,6 +78,7 @@ import AdminEmailTestCenter from './pages/admin/AdminEmailTestCenter';
 import AdminEmailSettings from './pages/admin/AdminEmailSettings';
 import ContractDetailPage from './pages/public/ContractDetailPage';
 import CalculatorVariantPage from './pages/public/CalculatorVariantPage';
+import RewardsPage from './pages/dashboard/RewardsPage';
 
 export interface RouteConfig {
   name: string;
@@ -118,6 +119,7 @@ export const routes: RouteConfig[] = [
   { name: 'Contracts', path: '/dashboard/contracts', element: <ContractsPage /> },
   { name: 'Marketplace', path: '/dashboard/marketplace', element: <DashboardMarketplace /> },
   { name: 'Analytics', path: '/dashboard/analytics', element: <AnalyticsPage /> },
+  { name: 'My Rewards', path: '/dashboard/rewards', element: <RewardsPage /> },
   { name: 'Wallet', path: '/dashboard/wallet', element: <WalletPage /> },
   { name: 'Deposit', path: '/dashboard/deposit', element: <DepositPage /> },
   { name: 'Withdraw', path: '/dashboard/withdraw', element: <WithdrawPage /> },
