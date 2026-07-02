@@ -15,7 +15,7 @@ export interface BtcStats {
 }
 
 const FALLBACK: BtcStats = {
-  btcPrice: 97000,
+  btcPrice: 0,             // 0 = "not yet loaded" — UI must check loading===true
   priceChange24h: 0,
   networkHashrate: 850,    // ~850 EH/s realistic mid-2025
   networkDifficulty: 120,  // ~120T realistic mid-2025

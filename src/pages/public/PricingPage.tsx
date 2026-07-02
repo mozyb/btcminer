@@ -435,14 +435,19 @@ export default function PricingPage() {
             if (typeof plan === "number") return <Skeleton key={plan} className="h-96 w-full bg-muted rounded-lg" />;
             const ct = plan as ContractTemplate;
             const effectivePrice = ct.promotional_price ?? ct.discount_price ?? ct.price;
-            const daily = dailyBTC(ct.hashrate);
-            const dailyUsd = daily * btc.btcPrice;
             const durDays = ct.is_lifetime ? 365 : ct.duration;
-            const totalBtcEst = totalBTC(ct.hashrate, durDays);
-            const totalUsdEst = totalUSD(ct.hashrate, durDays);
-            const maintTotal = ct.maintenance_fee * ct.hashrate * durDays;
-            const roiPct = effectivePrice > 0 ? ((totalUsdEst - maintTotal - effectivePrice) / effectivePrice) * 100 : 0;
-            const roiProgress = Math.min(Math.max((totalUsdEst / effectivePrice) * 100, 0), 150);
+            // Use admin-configured DB values — not live-computed — so pricing/marketplace
+            // always reflect exactly what the admin set in AdminContracts.
+            const dailyBtcDB  = ct.estimated_daily_reward;
+            const totalBtcDB  = ct.estimated_btc_production > 0
+              ? ct.estimated_btc_production
+              : dailyBtcDB * durDays;
+            const totalUsdDB  = ct.estimated_usd_value > 0
+              ? ct.estimated_usd_value
+              : totalBtcDB * (btc.btcPrice || 0);
+            const maintTotal  = ct.maintenance_fee * ct.hashrate * durDays;
+            const roiPct      = effectivePrice > 0 ? ((totalUsdDB - maintTotal - effectivePrice) / effectivePrice) * 100 : 0;
+            const roiProgress = Math.min(Math.max((totalUsdDB / (effectivePrice || 1)) * 100, 0), 150);
             const isFeatured = ct.featured || ct.badge === "most_popular";
             const badgeInfo = getBadgeStyle(ct, idx);
             const features = getFeatures(idx, dbContracts.length);
@@ -494,20 +499,21 @@ export default function PricingPage() {
                     ))}
                   </div>
 
-                  {/* Live yield */}
+                  {/* Live yield — uses DB estimated_daily_reward as the admin-set figure,
+                      with USD conversion using live BTC price */}
                   {btc.loading ? (
                     <Skeleton className="h-16 w-full bg-muted mb-4" />
                   ) : (
                     <div className="mb-4 p-3 bg-success/5 border border-success/20 rounded">
                       <p className="text-[10px] text-muted-foreground mb-1 flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-success" />Est. Yield (live rates)
+                        <span className="w-1.5 h-1.5 rounded-full bg-success" />Est. Yield (admin-configured)
                       </p>
-                      <p className="font-mono text-sm font-bold text-success">~{daily.toFixed(6)} BTC/day</p>
+                      <p className="font-mono text-sm font-bold text-success">~{ct.estimated_daily_reward.toFixed(6)} BTC/day</p>
                       <p className="font-mono text-xs text-muted-foreground">
-                        ≈ ${dailyUsd.toFixed(2)}/day &nbsp;·&nbsp; {totalBtcEst.toFixed(5)} BTC total
+                        ≈ ${(ct.estimated_daily_reward * btc.btcPrice).toFixed(2)}/day &nbsp;·&nbsp; {ct.estimated_btc_production.toFixed(5)} BTC total
                       </p>
                       <p className="font-mono text-xs text-foreground font-semibold mt-0.5">
-                        ≈ ${totalUsdEst.toLocaleString("en-US", { maximumFractionDigits: 0 })} over {ct.is_lifetime ? "365d (lifetime)" : `${ct.duration}d`}
+                        ≈ ${(ct.estimated_usd_value > 0 ? ct.estimated_usd_value : ct.estimated_daily_reward * btc.btcPrice * (ct.is_lifetime ? 365 : ct.duration)).toLocaleString("en-US", { maximumFractionDigits: 0 })} over {ct.is_lifetime ? "365d (lifetime)" : `${ct.duration}d`}
                       </p>
                     </div>
                   )}
@@ -523,7 +529,7 @@ export default function PricingPage() {
                       <span className="text-muted-foreground">Expected Return:</span>
                       {btc.loading
                         ? <Skeleton className="h-3 w-20 bg-muted" />
-                        : <span className="font-mono text-foreground font-semibold">${totalUsdEst.toLocaleString("en-US", { maximumFractionDigits: 0 })}</span>
+                        : <span className="font-mono text-foreground font-semibold">${totalUsdDB.toLocaleString("en-US", { maximumFractionDigits: 0 })}</span>
                       }
                     </div>
                     <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
@@ -606,26 +612,26 @@ export default function PricingPage() {
                     ))}
                   </tr>
                 ))}
-                {/* Live BTC yield rows */}
+                {/* DB-configured reward rows */}
                 <tr className="border-t border-border">
                   <td className="py-2.5 px-4 whitespace-nowrap text-muted-foreground text-xs">
-                    Est. Daily BTC <span className="text-success">● live</span>
+                    Est. Daily BTC
                   </td>
                   {sortedPlans.map(ct => (
                     <td key={ct.id} className={`py-2.5 px-4 text-center whitespace-nowrap ${ct.featured ? "bg-primary/5" : ""}`}>
-                      {btc.loading ? <Skeleton className="h-4 w-20 bg-muted mx-auto" />
-                        : <span className="font-mono text-success font-bold text-xs">{dailyBTC(ct.hashrate).toFixed(6)} ₿</span>}
+                      <span className="font-mono text-success font-bold text-xs">{ct.estimated_daily_reward.toFixed(6)} ₿</span>
                     </td>
                   ))}
                 </tr>
                 <tr className="border-t border-border bg-muted/20">
                   <td className="py-2.5 px-4 whitespace-nowrap text-muted-foreground text-xs">
-                    Est. Duration-Day USD <span className="text-success">● live</span>
+                    Est. Total USD
                   </td>
                   {sortedPlans.map(ct => (
                     <td key={ct.id} className={`py-2.5 px-4 text-center whitespace-nowrap ${ct.featured ? "bg-primary/5" : ""}`}>
-                      {btc.loading ? <Skeleton className="h-4 w-20 bg-muted mx-auto" />
-                        : <span className="font-mono font-bold text-foreground text-xs">${totalUSD(ct.hashrate, ct.is_lifetime ? 365 : ct.duration).toLocaleString("en-US", { maximumFractionDigits: 0 })}</span>}
+                      <span className="font-mono font-bold text-foreground text-xs">
+                        ${(ct.estimated_usd_value > 0 ? ct.estimated_usd_value : ct.estimated_daily_reward * (btc.btcPrice || 0) * (ct.is_lifetime ? 365 : ct.duration)).toLocaleString("en-US", { maximumFractionDigits: 0 })}
+                      </span>
                     </td>
                   ))}
                 </tr>
