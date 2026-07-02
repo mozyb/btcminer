@@ -1,0 +1,28 @@
+User-agent: *
+Allow: /
+
+# Block auth and admin routes from indexing
+Disallow: /login
+Disallow: /register
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /verify-email
+Disallow: /forgot-password
+Disallow: /reset-password
+
+# Allow public marketing pages
+Allow: /
+Allow: /about
+Allow: /marketplace
+Allow: /pricing
+Allow: /farms
+Allow: /hardware
+Allow: /calculator
+Allow: /affiliate
+Allow: /blog
+Allow: /faq
+Allow: /contact
+Allow: /transparency
+
+# Sitemaps
+Sitemap: https://btcminer.online/sitemap.xml
