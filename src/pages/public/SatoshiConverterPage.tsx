@@ -260,10 +260,7 @@ export default function SatoshiConverterPage() {
         title="Satoshi to USD Converter | Live BTC Price"
         description="Convert Satoshi to USD instantly with live Bitcoin price. Free Satoshi calculator, BTC unit converter, and Lightning-friendly SAT conversion tool."
         canonical="/satoshi-to-usd-converter"
-<<<<<<< HEAD
         keywords="satoshi to usd, satoshi converter, bitcoin converter, satoshi calculator, BTC to USD"
-=======
->>>>>>> 72e4db5c47454ac327e75930f78f07f22a878079
         ogImage="https://btcminer.online/images/satoshi-converter-og.jpg"
       />
       <JsonLd data={webPageSchema} />
