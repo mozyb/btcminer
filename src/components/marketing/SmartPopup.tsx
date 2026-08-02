@@ -183,6 +183,7 @@ export default function SmartPopup({ isLoggedIn }: { isLoggedIn: boolean }) {
           first_name: firstName.trim() || undefined,
           source: "popup",
           marketing_consent: consent,
+          popup_id: config?.id,
           variant: variant?.name,
         },
       });
@@ -190,7 +191,6 @@ export default function SmartPopup({ isLoggedIn }: { isLoggedIn: boolean }) {
       setSubmitted(true);
       setShowSuccess(true);
       setStoredData({ capturedEmail: email, capturedVariant: variant?.name || "control" });
-      if (config) void supabase.from("popup_events").insert({ popup_id: config.id, event_type: "email_captured", email, variant: variant?.name });
       toast.success("You're in! Your welcome discount is waiting.");
       // Redirect to registration with email and name pre-filled
       setTimeout(() => {
@@ -202,7 +202,8 @@ export default function SmartPopup({ isLoggedIn }: { isLoggedIn: boolean }) {
         const separator = ctaUrl.includes("?") ? "&" : "?";
         window.location.href = `${ctaUrl}${separator}${params.toString()}`;
       }, 1800);
-    } catch {
+    } catch (err) {
+      console.error("Popup submission error:", err);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);

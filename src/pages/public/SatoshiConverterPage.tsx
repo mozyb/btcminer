@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Copy, ArrowRightLeft, RotateCcw, ArrowRight } from "lucide-react";
+import { Copy, ArrowRightLeft, RotateCcw, ArrowRight, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import PageMeta from "@/components/common/PageMeta";
 
@@ -195,6 +195,23 @@ export default function SatoshiConverterPage() {
     toast.success("Calculator reset");
   };
 
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "Satoshi to USD Converter | BTCMiner.online",
+          text: "Convert Satoshi to USD instantly with live BTC price.",
+          url: "https://btcminer.online/satoshi-to-usd-converter",
+        });
+      } else {
+        await navigator.clipboard.writeText("https://btcminer.online/satoshi-to-usd-converter");
+        toast.success("Link copied to clipboard");
+      }
+    } catch {
+      toast.error("Share failed");
+    }
+  };
+
   const price = live?.price ?? 65000;
 
   const breadcrumbSchema = {
@@ -241,6 +258,7 @@ export default function SatoshiConverterPage() {
         title="Satoshi to USD Converter | Live BTC Price"
         description="Convert Satoshi to USD instantly with live Bitcoin price. Free Satoshi calculator, BTC unit converter, and Lightning-friendly SAT conversion tool."
         canonical="/satoshi-to-usd-converter"
+        ogImage="https://btcminer.online/images/satoshi-converter-og.jpg"
       />
       <JsonLd data={webPageSchema} />
       <JsonLd data={appSchema} />
@@ -339,6 +357,9 @@ export default function SatoshiConverterPage() {
                 </Button>
                 <Button type="button" variant="outline" onClick={handleReset}>
                   <RotateCcw className="w-4 h-4 mr-2" /> Reset
+                </Button>
+                <Button type="button" variant="outline" onClick={handleShare}>
+                  <Share2 className="w-4 h-4 mr-2" /> Share
                 </Button>
               </div>
 
@@ -459,6 +480,31 @@ export default function SatoshiConverterPage() {
                       {formatSat(ex.sat)} SAT ≈{" "}
                       <span className="text-emerald-500 font-semibold">{formatCurrency(satToUsd(ex.sat, price))}</span>
                     </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
+
+          {/* Related Tools */}
+          <section>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">More BTCMiner Tools</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { label: "Mining Profit Calculator", href: "/calculator", desc: "Estimate daily Bitcoin mining earnings, ROI, and break-even by hashrate and electricity cost." },
+                { label: "Bitcoin Price Tracker", href: "/marketplace", desc: "Compare live hashrate contracts and pricing across our marketplace." },
+                { label: "Mining Hardware Guide", href: "/hardware", desc: "Compare ASIC miners, efficiency, and profitability by machine." },
+                { label: "Farms & Facilities", href: "/farms", desc: "Explore transparent mining farms and facility locations." },
+                { label: "Cloud Mining Guide", href: "/blog/cloud-mining-vs-asic-mining", desc: "Learn how cloud mining works and how it compares to home mining." },
+                { label: "Bitcoin Mining Blog", href: "/blog", desc: "Read guides on hashrate, difficulty, profitability, and market trends." },
+              ].map(tool => (
+                <Card key={tool.href} className="bg-card border-border hover:border-primary/50 transition-colors h-full flex flex-col">
+                  <CardContent className="p-4 flex-1 flex flex-col">
+                    <h3 className="font-semibold text-foreground mb-1">{tool.label}</h3>
+                    <p className="text-sm text-muted-foreground mb-3 flex-1">{tool.desc}</p>
+                    <Link to={tool.href} className="text-sm text-primary hover:underline inline-flex items-center gap-1">
+                      Open tool <ArrowRight className="w-3 h-3" />
+                    </Link>
                   </CardContent>
                 </Card>
               ))}

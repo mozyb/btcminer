@@ -274,6 +274,9 @@ export default function HomePage() {
               <Button className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2" asChild>
                 <Link to="/calculator">Advanced Calculator <ArrowRight className="w-4 h-4" /></Link>
               </Button>
+              <Button variant="outline" asChild>
+                <Link to="/satoshi-to-usd-converter">Satoshi Converter</Link>
+              </Button>
               <Button variant="outline" asChild><Link to="/register">Start Mining {calcHashrate} TH/s</Link></Button>
             </div>
             <p className="text-xs text-muted-foreground text-center">
