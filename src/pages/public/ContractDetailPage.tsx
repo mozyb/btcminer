@@ -5,7 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import PublicLayout from "@/components/layouts/PublicLayout";
+<<<<<<< HEAD
 import PageMeta from "@/components/common/PageMeta";
+=======
+>>>>>>> 72e4db5c47454ac327e75930f78f07f22a878079
 import { getPublicContractTemplates, type ContractTemplate } from "@/lib/api";
 import { useBtcStats } from "@/hooks/useBtcStats";
 import {
@@ -131,12 +134,15 @@ export default function ContractDetailPage() {
 
   return (
     <PublicLayout>
+<<<<<<< HEAD
       <PageMeta
         title={`${contract.name} — ${contract.hashrate} ${contract.hashrate_unit} Bitcoin Mining Contract`}
         description={`${contract.name}: ${contract.hashrate} ${contract.hashrate_unit} ${contract.algorithm} cloud mining contract. ${contract.price} ${contract.currency} for ${contract.duration} days. Buy BTC hashrate instantly on BTCMiner.online.`}
         canonical={`/marketplace/${contract.slug}`}
         keywords={`${contract.name}, bitcoin mining contract, ${contract.hashrate} ${contract.hashrate_unit}, ${contract.algorithm} mining, cloud mining`}
       />
+=======
+>>>>>>> 72e4db5c47454ac327e75930f78f07f22a878079
       <JsonLd data={productSchema} />
       <JsonLd data={breadcrumbSchema} />
       <JsonLd data={faqSchema} />
