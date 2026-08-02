@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
 
 // Public pages
 import HomePage from './pages/public/HomePage';
@@ -16,6 +15,7 @@ import FAQPage from './pages/public/FAQPage';
 import ContactPage from './pages/public/ContactPage';
 import TransparencyPage from './pages/public/TransparencyPage';
 import PolicyPage from './pages/public/PolicyPage';
+import SatoshiConverterPage from './pages/public/SatoshiConverterPage';
 
 // Auth pages
 import LoginPage from './pages/auth/LoginPage';
@@ -107,7 +107,7 @@ export const routes: RouteConfig[] = [
   { name: 'Farms', path: '/farms', element: <FarmsPage />, public: true },
   { name: 'Hardware', path: '/hardware', element: <HardwarePage />, public: true },
   { name: 'Calculator', path: '/calculator', element: <CalculatorPage />, public: true },
-  { name: 'Satoshi Converter', path: '/satoshi-to-usd-converter', element: <Navigate to="/satoshi-to-usd-converter.html" replace />, public: true },
+  { name: 'Satoshi Converter', path: '/satoshi-to-usd-converter', element: <SatoshiConverterPage />, public: true },
   { name: 'Pricing', path: '/pricing', element: <PricingPage />, public: true },
   { name: 'Affiliate Program', path: '/affiliate-program', element: <AffiliateProgramPage />, public: true },
   { name: 'Blog', path: '/blog', element: <BlogPage />, public: true },

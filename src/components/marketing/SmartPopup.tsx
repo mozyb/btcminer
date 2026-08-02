@@ -213,7 +213,7 @@ export default function SmartPopup({ isLoggedIn }: { isLoggedIn: boolean }) {
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center p-4 animate-in fade-in duration-300"
+      className="fixed inset-0 z-[200] flex items-start justify-center p-4 overflow-y-auto animate-in fade-in duration-300"
       style={{ background: "rgba(0,0,0,0.78)", backdropFilter: "blur(4px)" }}
       onClick={e => { if (e.target === e.currentTarget) handleDismiss(); }}
       aria-modal="true"
@@ -221,7 +221,7 @@ export default function SmartPopup({ isLoggedIn }: { isLoggedIn: boolean }) {
       aria-label="Exclusive welcome offer"
     >
       <div
-        className="relative w-full max-w-[520px] rounded-2xl overflow-hidden shadow-[0_24px_80px_-16px_rgba(0,0,0,0.5)] border border-border/60 animate-in zoom-in-95 duration-300"
+        className="relative w-full max-w-[520px] max-h-[90vh] rounded-2xl overflow-hidden shadow-[0_24px_80px_-16px_rgba(0,0,0,0.5)] border border-border/60 animate-in zoom-in-95 duration-300 flex flex-col"
         style={{
           background: config.background_image
             ? `linear-gradient(rgba(10,10,18,0.82),rgba(10,10,18,0.95)), url(${config.background_image}) center/cover`
@@ -250,7 +250,7 @@ export default function SmartPopup({ isLoggedIn }: { isLoggedIn: boolean }) {
           </div>
         )}
 
-        <div className="relative p-6 md:p-8">
+        <div className="relative p-6 md:p-8 overflow-y-auto">
           {/* Badge */}
           <div className="flex items-center gap-2 mb-4">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/15 text-primary text-xs font-semibold border border-primary/20">

@@ -170,7 +170,7 @@ export default function CalculatorPage() {
         <div className="mt-6 p-4 bg-muted/30 border border-border rounded text-xs text-muted-foreground">
           <strong className="text-foreground">Disclaimer:</strong> This calculator provides estimates based on current network conditions. Actual mining output varies with difficulty changes, pool luck, hardware availability, and BTC price fluctuations. This is not financial advice.
           <div className="mt-2">
-            <a href="/satoshi-to-usd-converter.html" className="text-primary hover:underline">Also try: Satoshi to USD Converter →</a>
+            <Link to="/satoshi-to-usd-converter" className="text-primary hover:underline">Also try: Satoshi to USD Converter →</Link>
           </div>
         </div>
       </div>

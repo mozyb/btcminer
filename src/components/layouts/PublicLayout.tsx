@@ -24,7 +24,7 @@ const navLinks = [
   {
     label: "Tools", children: [
       { label: "Mining Calculator", href: "/calculator" },
-      { label: "Satoshi Converter", href: "/satoshi-to-usd-converter.html" },
+      { label: "Satoshi Converter", href: "/satoshi-to-usd-converter" },
     ],
   },
   { label: "Pricing", href: "/pricing" },
@@ -140,26 +140,15 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                   link.children ? (
                     <div key={link.label}>
                       <p className="text-xs uppercase tracking-wider text-muted-foreground px-2 py-2">{link.label}</p>
-                      {link.children.map((child) =>
-                        child.href === "/satoshi-to-usd-converter.html" ? (
-                          <a
-                            key={child.href}
-                            href={child.href}
-                            className="block px-3 py-2 rounded text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
-                            onClick={() => setMobileOpen(false)}
-                          >
-                            {child.label}
-                          </a>
-                        ) : (
-                          <Link
-                            key={child.href}
-                            to={child.href}
-                            className="block px-3 py-2 rounded text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
-                          >
-                            {child.label}
-                          </Link>
-                        )
-                      )}
+                      {link.children.map((child) => (
+                        <Link
+                          key={child.href}
+                          to={child.href}
+                          className="block px-3 py-2 rounded text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
                     </div>
                   ) : (
                     <Link
@@ -260,18 +249,10 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 {[
                   { label: "Knowledge Center",  href: "/blog" },
                   { label: "Profit Calculator", href: "/calculator" },
-                  { label: "Satoshi Converter", href: "/satoshi-to-usd-converter.html" },
+                  { label: "Satoshi Converter", href: "/satoshi-to-usd-converter" },
                   { label: "FAQ",               href: "/faq" },
                   { label: "Network Stats",     href: "/transparency" },
-                ].map(l => (
-                  <li key={l.href}>
-                    {l.href.startsWith("/satoshi-to-usd-converter.html") ? (
-                      <a href={l.href} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{l.label}</a>
-                    ) : (
-                      <Link to={l.href} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{l.label}</Link>
-                    )}
-                  </li>
-                ))}
+                ].map(l => <li key={l.href}><Link to={l.href} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{l.label}</Link></li>)}
               </ul>
             </div>
 
