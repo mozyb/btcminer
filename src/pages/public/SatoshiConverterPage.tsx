@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Copy, ArrowRightLeft, RotateCcw, ArrowRight, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import PageMeta from "@/components/common/PageMeta";
+import PublicLayout from "@/components/layouts/PublicLayout";
 
 function JsonLd({ data }: { data: object }) {
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
@@ -219,7 +220,8 @@ export default function SatoshiConverterPage() {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://btcminer.online/" },
-      { "@type": "ListItem", position: 2, name: "Satoshi to USD Converter", item: "https://btcminer.online/satoshi-to-usd-converter" },
+      { "@type": "ListItem", position: 2, name: "Tools", item: "https://btcminer.online/calculator" },
+      { "@type": "ListItem", position: 3, name: "Satoshi to USD Converter", item: "https://btcminer.online/satoshi-to-usd-converter" },
     ],
   };
 
@@ -253,7 +255,7 @@ export default function SatoshiConverterPage() {
   };
 
   return (
-    <>
+    <PublicLayout>
       <PageMeta
         title="Satoshi to USD Converter | Live BTC Price"
         description="Convert Satoshi to USD instantly with live Bitcoin price. Free Satoshi calculator, BTC unit converter, and Lightning-friendly SAT conversion tool."
@@ -265,11 +267,13 @@ export default function SatoshiConverterPage() {
       <JsonLd data={faqSchema} />
       <JsonLd data={breadcrumbSchema} />
 
-      <div className="min-h-screen bg-background">
+      <div className="bg-background">
         {/* Breadcrumb */}
         <div className="border-b border-border bg-muted/30">
           <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center gap-2 text-xs text-muted-foreground">
             <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+            <ArrowRight className="w-3 h-3" />
+            <Link to="/calculator" className="hover:text-foreground transition-colors">Tools</Link>
             <ArrowRight className="w-3 h-3" />
             <span className="text-foreground font-medium">Satoshi to USD Converter</span>
           </div>
@@ -295,7 +299,7 @@ export default function SatoshiConverterPage() {
           </div>
         </div>
 
-        <main className="max-w-4xl mx-auto px-4 md:px-6 py-10 md:py-14 space-y-10 md:space-y-16">
+        <main className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-14 space-y-10 md:space-y-16">
           {/* Calculator */}
           <Card className="bg-card border-border shadow-lg">
             <CardHeader className="pb-4">
@@ -491,12 +495,18 @@ export default function SatoshiConverterPage() {
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">More BTCMiner Tools</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
-                { label: "Mining Profit Calculator", href: "/calculator", desc: "Estimate daily Bitcoin mining earnings, ROI, and break-even by hashrate and electricity cost." },
-                { label: "Bitcoin Price Tracker", href: "/marketplace", desc: "Compare live hashrate contracts and pricing across our marketplace." },
-                { label: "Mining Hardware Guide", href: "/hardware", desc: "Compare ASIC miners, efficiency, and profitability by machine." },
-                { label: "Farms & Facilities", href: "/farms", desc: "Explore transparent mining farms and facility locations." },
+                { label: "Bitcoin Mining Calculator", href: "/calculator", desc: "Estimate daily Bitcoin mining earnings, ROI, and break-even by hashrate and electricity cost." },
+                { label: "BTC to USD Converter", href: "/satoshi-to-usd-converter", desc: "Convert BTC or Satoshi to USD instantly with live Bitcoin price." },
+                { label: "Mining Profit Calculator", href: "/calculator", desc: "Calculate mining profit and break-even for any ASIC or cloud contract." },
+                { label: "Hashrate Calculator", href: "/calculator", desc: "Estimate earnings by hashrate, power cost, and BTC price." },
+                { label: "Hashrate Marketplace", href: "/marketplace", desc: "Compare live hashrate contracts and pricing across our marketplace." },
+                { label: "Mining Contracts", href: "/pricing", desc: "Explore transparent cloud mining contracts and plans." },
+                { label: "Bitcoin Mining Explained", href: "/blog/what-is-bitcoin-mining-guide", desc: "Learn how Bitcoin mining works and what makes it profitable." },
+                { label: "What Is Hashrate?", href: "/blog/what-is-hashrate", desc: "Understand hashrate, its units, and why it matters." },
+                { label: "Bitcoin Mining Difficulty", href: "/blog/bitcoin-mining-difficulty-explained", desc: "Read how mining difficulty adjusts and affects rewards." },
                 { label: "Cloud Mining Guide", href: "/blog/cloud-mining-vs-asic-mining", desc: "Learn how cloud mining works and how it compares to home mining." },
                 { label: "Bitcoin Mining Blog", href: "/blog", desc: "Read guides on hashrate, difficulty, profitability, and market trends." },
+                { label: "Mining Hardware", href: "/hardware", desc: "Compare ASIC miners, efficiency, and profitability by machine." },
               ].map(tool => (
                 <Card key={tool.href} className="bg-card border-border hover:border-primary/50 transition-colors h-full flex flex-col">
                   <CardContent className="p-4 flex-1 flex flex-col">
@@ -532,9 +542,11 @@ export default function SatoshiConverterPage() {
                 { label: "Bitcoin Mining Explained", href: "/blog/what-is-bitcoin-mining-guide" },
                 { label: "What is Hashrate?", href: "/blog/what-is-hashrate" },
                 { label: "Bitcoin Mining Difficulty Explained", href: "/blog/bitcoin-mining-difficulty-explained" },
-                { label: "Bitcoin Profit Calculator", href: "/calculator" },
+                { label: "Bitcoin Mining Profit Calculator", href: "/calculator" },
+                { label: "BTC to USD Converter", href: "/satoshi-to-usd-converter" },
                 { label: "Cloud Mining Guide", href: "/blog/cloud-mining-vs-asic-mining" },
-                { label: "Mining Marketplace", href: "/marketplace" },
+                { label: "Mining Contracts", href: "/pricing" },
+                { label: "Hashrate Marketplace", href: "/marketplace" },
               ].map(link => (
                 <Link key={link.href} to={link.href} className="flex items-center gap-2 p-3 rounded-lg bg-muted/30 border border-border hover:border-primary/50 hover:text-primary transition-colors">
                   <span className="text-sm text-muted-foreground">{link.label}</span>
@@ -558,10 +570,16 @@ export default function SatoshiConverterPage() {
             </div>
             <div className="flex flex-wrap gap-3">
               <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
-                <Link to="/pricing">Browse Mining Contracts</Link>
+                <Link to="/calculator">Calculate Your Mining Profit</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/calculator">Calculate Mining Profit</Link>
+                <Link to="/pricing">Explore Mining Plans</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/marketplace">Browse Hashrate Marketplace</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/blog/what-is-bitcoin-mining-guide">Learn About Bitcoin Mining</Link>
               </Button>
             </div>
           </section>
@@ -575,6 +593,6 @@ export default function SatoshiConverterPage() {
           </section>
         </main>
       </div>
-    </>
+    </PublicLayout>
   );
 }

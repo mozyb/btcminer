@@ -23,8 +23,11 @@ const navLinks = [
   },
   {
     label: "Tools", children: [
-      { label: "Mining Calculator", href: "/calculator" },
-      { label: "Satoshi Converter", href: "/satoshi-to-usd-converter" },
+      { label: "Bitcoin Mining Calculator", href: "/calculator" },
+      { label: "Satoshi to USD Converter", href: "/satoshi-to-usd-converter" },
+      { label: "BTC to USD Converter", href: "/satoshi-to-usd-converter" },
+      { label: "Mining Profit Calculator", href: "/calculator" },
+      { label: "Hashrate Calculator", href: "/calculator" },
     ],
   },
   { label: "Pricing", href: "/pricing" },
@@ -88,17 +91,11 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    {link.children.map((child) =>
-                      child.href === "/satoshi-to-usd-converter.html" ? (
-                        <DropdownMenuItem key={child.href} asChild>
-                          <a href={child.href} className="cursor-pointer">{child.label}</a>
-                        </DropdownMenuItem>
-                      ) : (
-                        <DropdownMenuItem key={child.href} asChild>
-                          <Link to={child.href}>{child.label}</Link>
-                        </DropdownMenuItem>
-                      )
-                    )}
+                    {link.children.map((child) => (
+                      <DropdownMenuItem key={child.label} asChild>
+                        <Link to={child.href}>{child.label}</Link>
+                      </DropdownMenuItem>
+                    ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
@@ -142,7 +139,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                       <p className="text-xs uppercase tracking-wider text-muted-foreground px-2 py-2">{link.label}</p>
                       {link.children.map((child) => (
                         <Link
-                          key={child.href}
+                          key={child.label}
                           to={child.href}
                           className="block px-3 py-2 rounded text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
                         >
@@ -242,14 +239,26 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               </ul>
             </div>
 
+            {/* Tools */}
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Tools</p>
+              <ul className="space-y-2">
+                {[
+                  { label: "Mining Calculator",     href: "/calculator" },
+                  { label: "Satoshi to USD",        href: "/satoshi-to-usd-converter" },
+                  { label: "BTC to USD",            href: "/satoshi-to-usd-converter" },
+                  { label: "Mining Profit Calc",    href: "/calculator" },
+                  { label: "Hashrate Calculator",   href: "/calculator" },
+                ].map(l => <li key={l.label}><Link to={l.href} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{l.label}</Link></li>)}
+              </ul>
+            </div>
+
             {/* Resources */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Resources</p>
               <ul className="space-y-2">
                 {[
                   { label: "Knowledge Center",  href: "/blog" },
-                  { label: "Profit Calculator", href: "/calculator" },
-                  { label: "Satoshi Converter", href: "/satoshi-to-usd-converter" },
                   { label: "FAQ",               href: "/faq" },
                   { label: "Network Stats",     href: "/transparency" },
                 ].map(l => <li key={l.href}><Link to={l.href} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{l.label}</Link></li>)}
