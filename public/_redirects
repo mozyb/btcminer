@@ -1,2 +1,2 @@
-# SPA fallback — serve index.html for every route so React Router handles navigation
-/*    /index.html   200
+/satoshi-to-usd-converter.html /satoshi-to-usd-converter 301
+/* /index.html 200
