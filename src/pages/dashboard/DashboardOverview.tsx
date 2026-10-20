@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
-import { getContracts, getWallets, getNotifications, type Contract, type Wallet, type DBNotification } from "@/lib/api";
+import { getContracts, getWallets, getNotifications, getContractEffectiveStatus, isContractExpired, type Contract, type Wallet, type DBNotification } from "@/lib/api";
 import { useBtcStats } from "@/hooks/useBtcStats";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { Zap, TrendingUp, Wallet as WalletIcon, Bell, ArrowRight, Activity, ShoppingBag, FileText, RefreshCw } from "lucide-react";
@@ -33,7 +33,7 @@ export default function DashboardOverview() {
     }).finally(() => setDataLoading(false));
   }, [user?.id]);
 
-  const activeContracts = contracts.filter(c => c.status === "active");
+  const activeContracts = contracts.filter(c => getContractEffectiveStatus(c) === "active");
   const totalHashrate = activeContracts.reduce((s, c) => s + c.hashrate, 0);
   const btcWallet = wallets.find(w => w.currency === "BTC");
   const btcBalance = btcWallet?.balance ?? 0;
@@ -136,29 +136,33 @@ export default function DashboardOverview() {
             <CardContent className="flex-1 flex flex-col">
               {dataLoading ? (
                 <div className="space-y-3">{Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-16 bg-muted rounded" />)}</div>
-              ) : activeContracts.length === 0 ? (
+              ) : contracts.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center gap-3 py-6 border border-dashed border-border rounded">
                   <FileText className="w-8 h-8 text-muted-foreground" />
                   <p className="text-xs text-muted-foreground text-center">No active contracts yet</p>
                 </div>
               ) : (
                 <div className="space-y-3 flex-1">
-                  {activeContracts.slice(0, 3).map(c => {
-                    const totalDays = Math.max(1, Math.ceil((new Date(c.expiry_date).getTime() - new Date(c.start_date).getTime()) / 86400000));
-                    const daysLeft = Math.max(0, Math.ceil((new Date(c.expiry_date).getTime() - Date.now()) / 86400000));
-                    const progress = Math.max(5, ((totalDays - daysLeft) / totalDays) * 100);
+                  {(activeContracts.length > 0 ? activeContracts.slice(0, 3) : contracts.slice(0, 3)).map(c => {
+                    const effectiveStatus = getContractEffectiveStatus(c);
+                    const isExpired = effectiveStatus === "expired";
+                    const totalDays = c.expiry_date ? Math.max(1, Math.ceil((new Date(c.expiry_date).getTime() - new Date(c.start_date).getTime()) / 86400000)) : 1;
+                    const daysLeft = c.expiry_date ? Math.max(0, Math.ceil((new Date(c.expiry_date).getTime() - Date.now()) / 86400000)) : null;
+                    const progress = isExpired ? 100 : daysLeft !== null ? Math.max(5, ((totalDays - daysLeft) / totalDays) * 100) : 100;
                     return (
                       <div key={c.id} className="border border-border rounded p-3">
                         <div className="flex items-center justify-between mb-1">
                           <p className="text-xs font-medium text-foreground truncate">{c.contract_name}</p>
-                          <Badge className="bg-success/10 text-success border-success/20 text-[10px] shrink-0">Active</Badge>
+                          <Badge className={isExpired ? "bg-muted text-muted-foreground border-border text-[10px] shrink-0 capitalize" : "bg-success/10 text-success border-success/20 text-[10px] shrink-0 capitalize"}>
+                            {effectiveStatus}
+                          </Badge>
                         </div>
                         <div className="flex justify-between text-xs text-muted-foreground">
                           <span className="font-mono">{c.hashrate} {c.hashrate_unit}</span>
-                          <span>{daysLeft}d left</span>
+                          <span>{isExpired ? "Expired" : !c.expiry_date ? "Lifetime" : `${daysLeft}d left`}</span>
                         </div>
                         <div className="mt-1.5 bg-muted rounded-full h-1.5">
-                          <div className="bg-primary h-1.5 rounded-full" style={{ width: `${progress}%` }} />
+                          <div className={`h-1.5 rounded-full ${isExpired ? "bg-muted-foreground/40" : "bg-primary"}`} style={{ width: `${progress}%` }} />
                         </div>
                       </div>
                     );

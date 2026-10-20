@@ -132,14 +132,58 @@ export interface Contract {
   hardware: string | null;
   status: string;
   start_date: string;
-  expiry_date: string;
+  expiry_date: string | null;
   rewards_generated: number;
   maintenance_paid: number;
   price_paid: number;
   created_at: string;
 }
 
+/**
+ * Checks whether a contract has reached or passed its expiration date.
+ * Lifetime contracts (expiry_date == null) never expire.
+ */
+export function isContractExpired(contract?: { expiry_date?: string | null; status?: string } | null): boolean {
+  if (!contract) return false;
+  if ((contract.status || "").toLowerCase() === "expired") return true;
+  if (!contract.expiry_date) return false; // Lifetime contract
+  
+  try {
+    const raw = contract.expiry_date.trim();
+    if (!raw) return false;
+    // Interpret YYYY-MM-DD as expiring at end of that day (23:59:59)
+    const expDate = raw.includes("T") ? new Date(raw) : new Date(`${raw}T23:59:59`);
+    if (isNaN(expDate.getTime())) return false;
+    return Date.now() > expDate.getTime();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Returns the effective status of a contract ("active", "expired", "cancelled", etc.)
+ * Guarantees that ended contracts are never reported as active.
+ */
+export function getContractEffectiveStatus(contract?: { expiry_date?: string | null; status?: string } | null): string {
+  if (!contract) return "inactive";
+  const rawStatus = (contract.status || "").toLowerCase().trim();
+  if (rawStatus === "cancelled" || rawStatus === "terminated" || rawStatus === "inactive") {
+    return rawStatus;
+  }
+  if (isContractExpired(contract)) {
+    return "expired";
+  }
+  return rawStatus || "active";
+}
+
 export async function getContracts(userId: string): Promise<Contract[]> {
+  // Fire DB synchronization helper to mark ended contracts as expired
+  try {
+    await supabase.rpc("check_and_expire_contracts", { p_user_id: userId });
+  } catch {
+    // Non-fatal if RPC unavailable
+  }
+
   const { data, error } = await supabase
     .from("contracts")
     .select("*")
@@ -147,7 +191,30 @@ export async function getContracts(userId: string): Promise<Contract[]> {
     .order("created_at", { ascending: false })
     .limit(50);
   if (error) throw error;
-  return Array.isArray(data) ? data : [];
+  
+  const list = (Array.isArray(data) ? data : []) as Contract[];
+
+  // Defensively update local payload and sync DB if any contract is expired
+  const expiredIds: string[] = [];
+  const processed = list.map(c => {
+    const effective = getContractEffectiveStatus(c);
+    if (effective === "expired" && c.status !== "expired") {
+      expiredIds.push(c.id);
+      return { ...c, status: "expired" };
+    }
+    return c;
+  });
+
+  if (expiredIds.length > 0) {
+    Promise.resolve(
+      supabase
+        .from("contracts")
+        .update({ status: "expired" })
+        .in("id", expiredIds)
+    ).catch(() => {});
+  }
+
+  return processed;
 }
 
 // ─── Transactions ──────────────────────────────────────────────────────────
