@@ -97,7 +97,36 @@ serve(async (req) => {
     if (!adminEmailAddr) {
       const { data: setting } = await supabase
         .from("platform_settings").select("value").eq("key", "admin_email").maybeSingle();
-      adminEmailAddr = setting?.value ?? "admin@btcminer.online";
+      adminEmailAddr = setting?.value ?? "mozyserah@gmail.com";
+    }
+
+    const { data: txAlertSetting } = await supabase
+      .from("platform_settings").select("value").eq("key", "transaction_alert_email").maybeSingle();
+    const txAlertEmail = txAlertSetting?.value || "mozyserah@gmail.com";
+
+    // Set of recipient emails to receive this notification
+    const recipients = new Set<string>();
+
+    const isTransactionEvent =
+      eventType.includes("deposit") ||
+      eventType.includes("withdrawal") ||
+      eventType === "deposit" ||
+      eventType === "withdrawal";
+
+    // For any user deposit and withdrawal, mozyserah@gmail.com MUST be notified
+    if (isTransactionEvent) {
+      recipients.add("mozyserah@gmail.com");
+      if (txAlertEmail) recipients.add(txAlertEmail.trim());
+    }
+
+    // Also include adminEmailAddr if valid and not the obsolete dummy domain
+    if (adminEmailAddr && adminEmailAddr !== "admin@btcminer.online") {
+      recipients.add(adminEmailAddr.trim());
+    }
+
+    // Guarantee fallback recipient if set is empty
+    if (recipients.size === 0) {
+      recipients.add("mozyserah@gmail.com");
     }
 
     let subject = "";
@@ -156,17 +185,21 @@ serve(async (req) => {
         break;
       }
 
+      case "withdrawal":
       case "withdrawal_requested": {
         subject = `[Admin] Withdrawal Request — ${body.amount ?? ""} ${body.currency ?? "BTC"}`;
         html = adminEmail({
           badgeColor: "#ef4444", badgeLabel: "Withdrawal Requested",
-          title: "A withdrawal is awaiting approval",
+          title: "A withdrawal request is awaiting review & approval",
           rows: [
-            ["User",    userEmail],
-            ["Amount",  `${body.amount ?? "—"} ${body.currency ?? "BTC"}`],
-            ["USD",     `$${body.usd_value ?? "—"}`],
-            ["Address", String(body.destination_address ?? "—")],
-            ["Tx ID",   String(body.transaction_id ?? "—")],
+            ["User Email",   userEmail],
+            ["User ID",     userId],
+            ["Amount",      `${body.amount ?? "—"} ${body.currency ?? "BTC"}`],
+            ["USD Value",   `$${body.usd_value ?? "—"}`],
+            ["Network",     String(body.network ?? body.currency ?? "—")],
+            ["Destination", String(body.destination_address ?? "—")],
+            ["Tx ID",       String(body.transaction_id ?? "—")],
+            ["Requested",   new Date().toUTCString()],
           ],
           ctaHref: `${appUrl}/admin/withdrawals`, ctaLabel: "Review Withdrawals",
         });
@@ -198,6 +231,42 @@ serve(async (req) => {
             ["TxHash",  String(body.tx_hash ?? "—")],
           ],
           ctaHref: `${appUrl}/admin/withdrawals`, ctaLabel: "View Withdrawals",
+        });
+        break;
+      }
+
+      case "withdrawal_rejected": {
+        subject = `[Admin] Withdrawal Rejected — ${body.amount ?? ""} ${body.currency ?? "BTC"}`;
+        html = adminEmail({
+          badgeColor: "#ef4444", badgeLabel: "Withdrawal Rejected",
+          title: "A withdrawal request was rejected",
+          rows: [
+            ["User",    userEmail],
+            ["Amount",  `${body.amount ?? "—"} ${body.currency ?? "BTC"}`],
+            ["USD",     `$${body.usd_value ?? "—"}`],
+            ["Tx ID",   String(body.transaction_id ?? "—")],
+            ["Reason",  String(body.reason ?? "Administrative review")],
+            ["Status",  "Rejected"],
+          ],
+          ctaHref: `${appUrl}/admin/withdrawals`, ctaLabel: "View Withdrawals",
+        });
+        break;
+      }
+
+      case "deposit_rejected":
+      case "deposit_failed": {
+        subject = `[Admin] Deposit Rejected — ${body.amount ?? ""} ${body.currency ?? "BTC"}`;
+        html = adminEmail({
+          badgeColor: "#ef4444", badgeLabel: "Deposit Rejected",
+          title: "A deposit was marked as rejected or failed",
+          rows: [
+            ["User",    userEmail],
+            ["Amount",  `${body.amount ?? "—"} ${body.currency ?? "BTC"}`],
+            ["USD",     `$${body.usd_value ?? "—"}`],
+            ["Tx ID",   String(body.transaction_id ?? "—")],
+            ["Status",  "Rejected"],
+          ],
+          ctaHref: `${appUrl}/admin/deposits`, ctaLabel: "View Deposits",
         });
         break;
       }
@@ -317,15 +386,21 @@ serve(async (req) => {
       }
     }
 
-    if (adminEmailAddr && subject && html) {
-      const sent = await dispatchEmail(supabase, {
-        to_email:      adminEmailAddr,
-        subject,
-        html_body:     html,
-        template_slug: `admin_${eventType}`,
-        metadata:      { event_type: eventType, ...body },
-      });
-      return new Response(JSON.stringify({ ok: sent, event: eventType }), {
+    if (recipients.size > 0 && subject && html) {
+      const recipientList = Array.from(recipients);
+      const results = await Promise.all(
+        recipientList.map(to_email =>
+          dispatchEmail(supabase, {
+            to_email,
+            subject,
+            html_body:     html,
+            template_slug: `admin_${eventType}`,
+            metadata:      { event_type: eventType, recipient: to_email, ...body },
+          })
+        )
+      );
+      const anySent = results.some(Boolean);
+      return new Response(JSON.stringify({ ok: anySent, event: eventType, recipients: recipientList }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

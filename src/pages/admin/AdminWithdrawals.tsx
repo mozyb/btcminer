@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AdminLayout from "@/components/layouts/AdminLayout";
 import { supabase } from "@/db/supabase";
-import { approveTransaction, rejectTransaction, notifyUser } from "@/lib/api";
+import { approveTransaction, rejectTransaction, notifyUser, notifyAdmin } from "@/lib/api";
 import { Search, CheckCircle, XCircle, RefreshCw, Clock } from "lucide-react";
 import { toast } from "sonner";
 
@@ -75,6 +75,7 @@ export default function AdminWithdrawals() {
       await approveTransaction(row.id, "withdrawal");
       setRows(rs => rs.map(r => r.id === row.id ? { ...r, status: "completed" } : r));
       notifyUser({ type: "withdrawal_approved", user_id: row.user_id, user_email: row.user_email, currency: row.currency, amount: row.amount, usd_value: row.usd_value, transaction_id: row.id, destination_address: row.destination_address ?? undefined });
+      notifyAdmin({ type: "withdrawal_approved", user_id: row.user_id, user_email: row.user_email, currency: row.currency, amount: row.amount, usd_value: row.usd_value, transaction_id: row.id, destination_address: row.destination_address ?? undefined });
       toast.success("Withdrawal approved — please send funds to user's address.");
     } catch (e: unknown) { toast.error(e instanceof Error ? e.message : "Failed to approve."); }
     finally { setActing(null); }
@@ -86,6 +87,7 @@ export default function AdminWithdrawals() {
       await rejectTransaction(row.id);
       setRows(rs => rs.map(r => r.id === row.id ? { ...r, status: "failed" } : r));
       notifyUser({ type: "withdrawal_rejected", user_id: row.user_id, user_email: row.user_email, currency: row.currency, amount: row.amount, usd_value: row.usd_value, transaction_id: row.id });
+      notifyAdmin({ type: "withdrawal_rejected", user_id: row.user_id, user_email: row.user_email, currency: row.currency, amount: row.amount, usd_value: row.usd_value, transaction_id: row.id });
       toast.error("Withdrawal rejected.");
     } catch { toast.error("Failed to reject."); }
     finally { setActing(null); }

@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AdminLayout from "@/components/layouts/AdminLayout";
 import { supabase } from "@/db/supabase";
-import { approveTransaction, rejectTransaction, notifyUser } from "@/lib/api";
+import { approveTransaction, rejectTransaction, notifyUser, notifyAdmin } from "@/lib/api";
 import { Search, CheckCircle, XCircle, RefreshCw, Clock } from "lucide-react";
 import { toast } from "sonner";
 
@@ -76,6 +76,7 @@ export default function AdminDeposits() {
       await approveTransaction(row.id, "deposit");
       setRows(rs => rs.map(r => r.id === row.id ? { ...r, status: "completed" } : r));
       notifyUser({ type: "deposit_confirmed", user_id: row.user_id, user_email: row.user_email, currency: row.currency, amount: row.amount, usd_value: row.usd_value, transaction_id: row.id });
+      notifyAdmin({ type: "deposit_confirmed", user_id: row.user_id, user_email: row.user_email, currency: row.currency, amount: row.amount, usd_value: row.usd_value, transaction_id: row.id });
       toast.success("Deposit approved and balance credited.");
     } catch (e: unknown) { toast.error(e instanceof Error ? e.message : "Failed to approve deposit."); }
     finally { setActing(null); }
@@ -87,6 +88,7 @@ export default function AdminDeposits() {
       await rejectTransaction(row.id);
       setRows(rs => rs.map(r => r.id === row.id ? { ...r, status: "failed" } : r));
       notifyUser({ type: "deposit_failed", user_id: row.user_id, user_email: row.user_email, currency: row.currency, amount: row.amount, usd_value: row.usd_value, transaction_id: row.id });
+      notifyAdmin({ type: "deposit_rejected", user_id: row.user_id, user_email: row.user_email, currency: row.currency, amount: row.amount, usd_value: row.usd_value, transaction_id: row.id });
       toast.error("Deposit rejected.");
     } catch { toast.error("Failed to reject deposit."); }
     finally { setActing(null); }
