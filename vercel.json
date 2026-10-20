@@ -1,0 +1,13 @@
+{
+  "redirects": [
+    {
+      "source": "/satoshi-to-usd-converter.html",
+      "destination": "/satoshi-to-usd-converter",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
+
